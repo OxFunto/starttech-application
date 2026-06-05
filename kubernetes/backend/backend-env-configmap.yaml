@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-env-file
+  namespace: starttech
+data:
+  .env: |
+    PORT=8080
+    MONGO_URI=mongodb://admin:password123@mongodb-service:27017/starttech?authSource=admin
+    DB_NAME=starttech
+    JWT_SECRET_KEY=supersecretkey123
+    REDIS_ADDR=
+    REDIS_PASSWORD=
+    ENABLE_CACHE=false
+    ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000

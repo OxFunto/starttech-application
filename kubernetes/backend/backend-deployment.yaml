@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: starttech
+  labels:
+    app: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: notfunn/starttech-backend:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        - name: MONGO_URI
+          value: "mongodb://admin:password123@mongodb-service:27017/starttech?authSource=admin"
+        - name: DB_NAME
+          value: "starttech"
+        - name: JWT_SECRET_KEY
+          value: "supersecretkey123"
+        - name: ENABLE_CACHE
+          value: "false"
+        - name: REDIS_ADDR
+          value: ""
+        - name: REDIS_PASSWORD
+          value: ""
+        - name: ALLOWED_ORIGINS
+          value: "http://localhost:5173,http://localhost:3000"
+        volumeMounts:
+        - name: env-file
+          mountPath: /app/.env
+          subPath: .env
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      volumes:
+      - name: env-file
+        configMap:
+          name: backend-env-file
